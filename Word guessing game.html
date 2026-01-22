@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Guessing Game</title>
     <style>
-        /* Base styles with gradient background */
+        
         body {
             font-family: 'Arial', sans-serif;
             display: flex;
@@ -202,7 +202,7 @@
         const confetti = document.getElementById('confetti');
 
         function initGame() {
-            selectedWord = words[Math.floor(Math.random() * words.length)]; // Random word
+            selectedWord = words[Math.floor(Math.random() * words.length)]; 
             guessed = new Array(selectedWord.length).fill('_');
             wrong = 0;
             updateDisplay();
@@ -287,7 +287,7 @@
             if (e.key === 'Enter') checkGuess();
         });
 
-        initGame(); // Start game
+        initGame();
     </script>
 </body>
 </html>
