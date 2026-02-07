@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATM Simulator</title>
-    <style>
+<!doctype html>
+<html lang="en"> 
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>ATM Simulator</title> 
+  <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -15,58 +15,195 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
+
         .container {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
             text-align: center;
-            width: 300px;
+            width: 320px;
+            animation: upDown 2s ease-in-out infinite;
+
         }
+        @keyframes upDown{
+    0%{
+        transform: translateY(0);
+    }
+    50%{
+        transform: translateY(-30px); /* upar kitna jaana hai */
+    }
+    100%{
+        transform: translateY(0);
+    }
+}
+        
+        
+
         input, button {
-            margin: 10px;
+            margin: 10px 0;
             padding: 10px;
-            width: 80%;
+            width: 90%;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 15px;
         }
+
         button {
             background: #007bff;
             color: white;
             cursor: pointer;
         }
+
         button:hover {
             background: #0056b3;
         }
+
         #message {
-            margin-top: 20px;
-            min-height: 50px;
+            margin-top: 15px;
+            min-height: 40px;
+            font-weight: bold;
         }
+
         .hidden {
             display: none;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>ATM Simulator</h1>
-        <div id="pin-section">
-            <p>Enter PIN:</p>
-            <input type="password" id="pin-input" placeholder="Enter PIN">
-            <button id="enter-pin">Enter</button>
-        </div>
-        <div id="menu-section" class="hidden">
-            <p>Choose an option:</p>
-            <button id="check-balance">1. Check Balance</button>
-            <button id="deposit">2. Deposit Money</button>
-            <button id="withdraw">3. Withdraw Money</button>
-            <button id="change-pin">4. Change PIN</button>
-            <button id="exit">5. Exit</button>
-            <div id="amount-section" class="hidden">
-                <input type="number" id="amount-input" placeholder="Enter amount">
-                <button id="submit-amount">Submit</button>
-            </div>
-            <div id="pin-change-section" class="hidden">
+    </style> 
+ </head> 
+ <body> 
+  <div class="container"> 
+   <h2>ATM Simulator</h2> <!-- PIN SECTION --> 
+   <div id="pin-section"> 
+    <p>Enter PIN</p> 
+    <input type="password" id="pin-input" placeholder="4-digit PIN"> <button id="enter-pin">Enter</button> 
+   </div> <!-- MENU SECTION --> 
+   <div id="menu-section" class="hidden"> <button id="check-balance">1. Check Balance</button> <button id="deposit">2. Deposit Money</button> <button id="withdraw">3. Withdraw Money</button> <button id="change-pin">4. Change PIN</button> <button id="exit">5. Exit</button> <!-- AMOUNT --> 
+    <div id="amount-section" class="hidden"> 
+     <input type="number" id="amount-input" placeholder="Enter amount"> <button id="submit-amount">Submit</button> 
+    </div> <!-- PIN CHANGE --> 
+    <div id="pin-change-section" class="hidden"> 
+     <input type="password" id="old-pin-input" placeholder="Old PIN"> 
+     <input type="password" id="new-pin-input" placeholder="New PIN"> <button id="submit-pin-change">Change PIN</button> 
+    </div> 
+   </div> 
+   <div id="message"></div> 
+  </div> 
+  <script>
+    // LOAD FROM LOCAL STORAGE
+    let pin = localStorage.getItem("atm_pin")
+        ? parseInt(localStorage.getItem("atm_pin"))
+        : 1385;
+
+    let balance = localStorage.getItem("atm_balance")
+        ? parseInt(localStorage.getItem("atm_balance"))
+        : 1000;
+
+    let currentChoice = null;
+
+    const pinSection = document.getElementById("pin-section");
+    const menuSection = document.getElementById("menu-section");
+    const amountSection = document.getElementById("amount-section");
+    const pinChangeSection = document.getElementById("pin-change-section");
+    const message = document.getElementById("message");
+
+    // PIN ENTER
+    document.getElementById("enter-pin").onclick = () => {
+        const enteredPin = parseInt(document.getElementById("pin-input").value);
+
+        if (enteredPin !== pin) {
+            message.textContent = "❌ Incorrect PIN";
+            return;
+        }
+
+        pinSection.classList.add("hidden");
+        menuSection.classList.remove("hidden");
+        message.textContent = "✅ Login Successful";
+    };
+
+    // CHECK BALANCE
+    document.getElementById("check-balance").onclick = () => {
+        message.textContent = `💰 Balance: ₹${balance}`;
+    };
+
+    // DEPOSIT
+    document.getElementById("deposit").onclick = () => {
+        currentChoice = "deposit";
+        amountSection.classList.remove("hidden");
+        pinChangeSection.classList.add("hidden");
+        message.textContent = "";
+    };
+
+    // WITHDRAW
+    document.getElementById("withdraw").onclick = () => {
+        currentChoice = "withdraw";
+        amountSection.classList.remove("hidden");
+        pinChangeSection.classList.add("hidden");
+        message.textContent = "";
+    };
+
+    // CHANGE PIN
+    document.getElementById("change-pin").onclick = () => {
+        pinChangeSection.classList.remove("hidden");
+        amountSection.classList.add("hidden");
+        message.textContent = "";
+    };
+
+    // EXIT
+    document.getElementById("exit").onclick = () => {
+        message.textContent = "🙏 Thank you for using ATM";
+        setTimeout(() => location.reload(), 1500);
+    };
+
+    // AMOUNT SUBMIT
+    document.getElementById("submit-amount").onclick = () => {
+        const amount = parseInt(document.getElementById("amount-input").value);
+
+        if (amount <= 0 || isNaN(amount)) {
+            message.textContent = "❌ Invalid amount";
+            return;
+        }
+
+        if (currentChoice === "deposit") {
+            balance += amount;
+            localStorage.setItem("atm_balance", balance);
+            message.textContent = ` Deposited. Balance: ₹${balance}`;
+        }
+
+        if (currentChoice === "withdraw") {
+            if (amount > balance) {
+                message.textContent = "❌ Insufficient balance";
+                return;
+            }
+            balance -= amount;
+            localStorage.setItem("atm_balance", balance);
+            message.textContent = `✅ Withdrawn. Balance: ₹${balance}`;
+        }
+
+        amountSection.classList.add("hidden");
+        document.getElementById("amount-input").value = "";
+    };
+
+    // PIN CHANGE SUBMIT
+    document.getElementById("submit-pin-change").onclick = () => {
+        const oldPin = parseInt(document.getElementById("old-pin-input").value);
+        const newPin = parseInt(document.getElementById("new-pin-input").value);
+
+        if (oldPin !== pin || isNaN(newPin)) {
+            message.textContent = "❌ PIN mismatch";
+            return;
+        }
+
+        pin = newPin;
+        localStorage.setItem("atm_pin", pin);
+        message.textContent = "✅ PIN changed successfully";
+
+        pinChangeSection.classList.add("hidden");
+        document.getElementById("old-pin-input").value = "";
+        document.getElementById("new-pin-input").value = "";
+    };
+</script> 
+ </body>
+</html>            <div id="pin-change-section" class="hidden">
                 <input type="password" id="old-pin-input" placeholder="Enter old PIN">
                 <input type="password" id="new-pin-input" placeholder="Enter new PIN">
                 <button id="submit-pin-change">Change PIN</button>
